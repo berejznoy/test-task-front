@@ -3,7 +3,7 @@
     <v-row
       v-if="isMobile"
       align="center"
-      class="ma-0 mb-3"
+      class="ma-0 mb-0"
     >
       <v-card width="100%">
       <v-text-field
@@ -92,6 +92,8 @@
       </template>
     </v-list>
     </v-card>
+    </transition>
+    <transition name="fade">
       <v-card class="hidden-sm-and-down fullscreen-search-box" v-if="this.items.length">
         <v-list three-line >
           <template v-for="(item, index) in items">

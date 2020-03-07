@@ -51,9 +51,10 @@ module.exports = {
       dark: true,
       themes: {
         light: {
-          background: colors.grey.lighten2,
+          background: colors.grey.lighten3,
           menu: colors.grey.lighten4,
-          card: colors.grey.lighten4
+          card: colors.grey.lighten4,
+          color: colors.grey.darken4
         }
       }
     },

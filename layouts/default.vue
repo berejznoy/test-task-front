@@ -12,7 +12,7 @@
             <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
+            <v-list-item-title>Menu 1</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link>
@@ -20,7 +20,7 @@
             <v-icon>mdi-settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Settings</v-list-item-title>
+            <v-list-item-title>Menu 2</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -94,8 +94,15 @@
         if (this.$vuetify.theme.dark === true) return 'mdi-white-balance-sunny';
         else return "mdi-weather-night"
       }
-    }
+    },
+    created () {
+      const hour = new Date().getHours().toLocaleString();
+      if (hour > 8 && hour < 21) this.$vuetify.theme.dark = false
+    },
   }
 </script>
-<style scoped>
+<style>
+  p{
+    font-size: 0.92rem;
+  }
 </style>

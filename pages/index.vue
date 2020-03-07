@@ -15,7 +15,7 @@
             height="200"
           ></v-img>
         <v-card-text>
-          <p class="mb-0"> {{item.data.post_announce[0] && item.data.post_announce[0].text}} </p>
+          <p class="mb-0" :style="{color: $vuetify.theme.themes[$customTheme].color}"> {{item.data.post_announce[0] && item.data.post_announce[0].text}} </p>
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-btn nuxt :to="`/story/${item.uid}`"> Читать </v-btn>

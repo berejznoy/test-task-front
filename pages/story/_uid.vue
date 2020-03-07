@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="my-3">
     <div class="fixed-arrow hidden-xs-only">
     <v-btn icon @click="$router.go(-1)"> <v-icon>mdi-chevron-left</v-icon></v-btn>
     </div>
@@ -23,9 +23,9 @@
       height="200"
     ></v-img>
 
-    <v-card-text v-html="content"/>
+    <v-card-text :style="{color: $vuetify.theme.themes[$customTheme].color}" v-html="content"/>
 
-    <v-card-actions>
+    <v-card-actions class="mb-3">
       <v-spacer></v-spacer>
       <v-row justify="space-between" style="width: 100%">
         <v-col cols="8" class="text-left pl-0">
