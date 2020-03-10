@@ -4,7 +4,7 @@
         <v-btn v-if="sharedShow" icon small @click="copyLink"><v-icon small>mdi-link</v-icon> </v-btn>
       </transition>
       <v-btn icon @click="sharedShow = !sharedShow">
-        <v-icon>mdi-share-variant</v-icon>
+        <v-icon>mdi mdi-dots-horizontal</v-icon>
       </v-btn>
       <v-snackbar
       v-model="snackbar"

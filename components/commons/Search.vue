@@ -45,58 +45,9 @@
       </v-text-field>
     </v-row>
     <transition name="fade">
-      <v-card class="hidden-md-and-up mb-3" v-if="isShowSearchedBlock">
-    <v-list three-line >
-      <template v-for="(item, index) in items">
-        <v-subheader
-          v-if="item.header && !item.found"
-          :key="item.header"
-        >
-          <p class="mb-0">{{item.header}}</p>
-          <v-btn icon small class="mb-5 ml-5" @click.stop="closeSearchMenu"><v-icon small>mdi-window-close</v-icon></v-btn>
-        </v-subheader>
-        <v-subheader
-          v-else-if="item.header && item.found"
-          :key="item.header"
-        >
-          <v-row justify="space-between">
-            <p class="mb-0 ml-3">{{item.header}}</p>
-            <v-btn icon small @click.stop="closeSearchMenu"><v-icon small>mdi-window-close</v-icon></v-btn>
-          </v-row>
-        </v-subheader>
-        <v-divider
-          v-else-if="item.divider"
-          :key="index"
-          :inset="item.inset"
-        ></v-divider>
-
-        <v-list-item
-          v-else
-          :key="item.title"
-          @click="redirect(item.uid)"
-        >
-          <v-list-item-avatar>
-            <v-img :src="item.photo"></v-img>
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-            <v-list-item-title>
-              <v-row justify="space-between" align="center" class="px-3">
-                <p class="mb-0">{{item.title}}</p>
-                <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{item.rating}}</p>
-              </v-row>
-            </v-list-item-title>
-            <v-list-item-subtitle>{{item.announce}}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-    </v-list>
-    </v-card>
-    </transition>
-    <transition name="fade">
-      <v-card class="hidden-sm-and-down fullscreen-search-box" v-if="this.items.length">
+      <v-card :class="{'fullscreen-search-box': !$vuetify.breakpoint.xsOnly}" v-if="this.items.length">
         <v-list three-line >
-          <template v-for="(item, index) in items">
+          <template v-for="(item) in items">
             <v-subheader
               v-if="item.header && !item.found"
               :key="item.header"
@@ -115,27 +66,27 @@
             </v-subheader>
             <v-divider
               v-else-if="item.divider"
-              :key="index"
+              :key="item.id"
               :inset="item.inset"
             ></v-divider>
 
             <v-list-item
               v-else
-              :key="item.title"
+              :key="item.id"
               @click="redirect(item.uid)"
             >
               <v-list-item-avatar>
-                <v-img :src="item.photo"></v-img>
+                <v-img :src="item.data.post_image.url"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content>
                 <v-list-item-title>
                   <v-row justify="space-between" align="center" class="px-3">
-                    <p class="mb-0">{{item.title}}</p>
+                    <p class="mb-0">{{item.data.post_title[0].text}}</p>
                     <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{item.rating}}</p>
                   </v-row>
                 </v-list-item-title>
-                <v-list-item-subtitle>{{item.announce}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.data.post_announce[0].text}}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -146,9 +97,7 @@
 </template>
 
 <script>
-    import Prismic from "prismic-javascript";
-    import {apiEndpoint} from "../../config/prismic.config";
-    import algoliasearch from 'algoliasearch/lite';
+    import {findPostByText} from "../../utils/prismic";
 
     export default {
         name: "Search.vue",
@@ -158,22 +107,14 @@
       },
       data: () => {
           return {
-            searchClient: algoliasearch(
-              '84CRV6FPGO',
-              '487c27ce38954b19d8facd77889d3a66'),
             width: '500px',
             query: "",
             items: [],
           }
       },
-      computed: {
-          isShowSearchedBlock() {
-            return !!(this.items.length && this.isMobile);
-          }
-      },
       methods: {
         redirect(uid) {
-          this.$router.push(`/story/${uid}`)
+          this.$router.push(`/story/${uid}`);
           this.closeSearchMenu()
         },
         closeSearchMenu() {
@@ -181,11 +122,10 @@
           this.query = ''
         },
         async search() {
-          const index = this.searchClient.initIndex('screep');
-          const { hits } = await index.search(this.query);
-          if(hits.length) {
-            this.items = hits.reduce((acc, cur, index) => {
-              if(hits[index + 1]) return [...acc, cur,   { divider: true, inset: true }];
+          const {results} = await findPostByText("document.type", "post", 'document', this.query);
+          if(results.length) {
+            this.items = results.reduce((acc, cur, index) => {
+              if(results[index + 1]) return [...acc, cur,   { divider: true, inset: true }];
               else return [...acc, cur]
             }, [{ header: 'Найдено:', found: true }])
           } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }]
@@ -198,8 +138,10 @@
   .fullscreen-search-box {
     position: absolute;
     max-width: 400px;
+    margin-bottom: 12px;
     top: 63px;
     right: 0;
+    z-index: 1000;
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;

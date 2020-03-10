@@ -28,17 +28,13 @@
 </template>
 
 <script>
-import Prismic from "prismic-javascript";
-import { apiEndpoint } from "../config/prismic.config";
 import SharedComponents from "../components/commons/SharedComponents"
+import {getAllPosts} from '../utils/prismic'
 
 export default {
   components: {SharedComponents},
   async asyncData() {
-    const api = await Prismic.getApi(apiEndpoint);
-    const items = await api.query(
-      Prismic.Predicates.at("document.type", "post")
-    );
+    const items = await getAllPosts("document.type", "post");
     return {
       items: items.results
     };

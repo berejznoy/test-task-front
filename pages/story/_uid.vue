@@ -43,11 +43,10 @@
 </template>
 
 <script>
-  import Prismic from "prismic-javascript";
   import PrismicDom from "prismic-dom"
-  import { apiEndpoint } from "../../config/prismic.config";
   import SharedComponents from '../../components/commons/SharedComponents'
   import algoliasearch from "algoliasearch/lite";
+  import {getPostByUid} from '../../utils/prismic'
 
   export default {
     components: {SharedComponents},
@@ -63,8 +62,7 @@
       }
     },
     async asyncData(ctx) {
-      const api = await Prismic.getApi(apiEndpoint);
-      const results = await api.getByUID('post', `${ctx.params.uid}`);
+      const results = await getPostByUid('post', `${ctx.params.uid}`);
       const header = PrismicDom.RichText.asText(results.data.post_title);
       const content = PrismicDom.RichText.asHtml(results.data.post_body);
       const date = ctx.$moment(results.data.public_date).format('DD.MM.YYYY');

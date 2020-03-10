@@ -1,15 +1,11 @@
 import colors from 'vuetify/lib/util/colors'
-import Prismic from "prismic-javascript";
-import { apiEndpoint } from "./config/prismic.config";
+import {getAllPosts} from './utils/prismic'
 require('dotenv').config()
 
 module.exports = {
   generate: {
     async routes() {
-      const api = await Prismic.getApi(apiEndpoint);
-      const items = await api.query(
-        Prismic.Predicates.at("document.type", "post")
-      );
+      const items = await getAllPosts("document.type", "post");
       return items.results.map(item => {
         return {
           route: `/story/${item.uid}`

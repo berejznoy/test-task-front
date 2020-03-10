@@ -97,7 +97,7 @@
     },
     created () {
       const hour = new Date().getHours().toLocaleString();
-      if (hour > 8 && hour < 21) this.$vuetify.theme.dark = false
+      if (hour > 7 && hour < 21) this.$vuetify.theme.dark = false
     },
   }
 </script>
