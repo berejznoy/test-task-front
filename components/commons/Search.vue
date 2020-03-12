@@ -15,7 +15,7 @@
         class="hidden-md-and-up"
       >
         <template v-slot:append>
-          <v-btn icon type="submit" :disabled="!query">
+          <v-btn icon type="submit" :disabled="!query" :loading="loading">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </template>
@@ -38,7 +38,7 @@
         class="hidden-sm-and-down"
       >
         <template v-slot:append>
-          <v-btn icon type="submit" :disabled="!query">
+          <v-btn icon type="submit" :disabled="!query" :loading="loading">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </template>
@@ -69,7 +69,6 @@
               :key="item.id"
               :inset="item.inset"
             ></v-divider>
-
             <v-list-item
               v-else
               :key="item.id"
@@ -110,6 +109,7 @@
             width: '500px',
             query: "",
             items: [],
+            loading: false
           }
       },
       methods: {
@@ -122,13 +122,20 @@
           this.query = ''
         },
         async search() {
-          const {results} = await findPostByText("document.type", "post", 'document', this.query);
-          if(results.length) {
-            this.items = results.reduce((acc, cur, index) => {
-              if(results[index + 1]) return [...acc, cur,   { divider: true, inset: true }];
-              else return [...acc, cur]
-            }, [{ header: 'Найдено:', found: true }])
-          } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }]
+          try {
+            this.loading = true;
+            const {results} = await findPostByText("document.type", "post", 'document', this.query);
+            if(results.length) {
+              this.items = results.reduce((acc, cur, index) => {
+                if(results[index + 1]) return [...acc, cur,   { divider: true, inset: true }];
+                else return [...acc, cur]
+              }, [{ header: 'Найдено:', found: true }])
+            } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }]
+          } catch (e) {
+            console.error(e)
+          } finally {
+            this.loading = false
+          }
         }
       }
     }
