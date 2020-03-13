@@ -1,19 +1,22 @@
 import colors from 'vuetify/lib/util/colors'
 import {getAllPosts} from './utils/prismic'
+import axios from "axios";
 require('dotenv').config();
 
 module.exports = {
   generate: {
-    interval: 100,
     async routes() {
       const items = await getAllPosts("document.type", "post");
       const categories = await getAllPosts("document.type", "category");
-      const posts = items.results.map(item => {
+      const posts = await Promise.all(items.results.map(async item => {
+        const rateData = await axios.get(`/blog/post/prismic/${item.id}` ,{
+          baseURL: process.env.API_URL
+        });
         return {
           route: `/story/${item.uid}`,
-          payload: item
+          payload: {...item, rateData: rateData.data}
         }
-      });
+      }));
       const allCategories = categories.results.map(item => {
         return {
           route: `/category/${item.data.name}`
@@ -36,7 +39,9 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  css: [],
+  env: {
+    baseUrl: process.env.API_URL || 'http://localhost:4000'
+  },
   plugins: [
     { src: '~/plugins/clipboard' },
     { src: '~/plugins/mixins' },
@@ -45,7 +50,7 @@ module.exports = {
   buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv', '@nuxtjs/axios'],
   modules: ['nuxt-webfontloader'],
   axios: {
-   baseURL: "http://localhost:4000"
+   baseURL: "https://screep-rating-service.now.sh"
   },
   webfontloader: {
     google: {

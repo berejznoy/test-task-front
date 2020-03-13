@@ -13,7 +13,9 @@ export const getAllPosts = async(documentType, value) => {
 };
 
 export const getTopPosts = async(documentType, value) => {
-  const getTopPostsUIDs = await axios.get("http://localhost:4000/blog/posts/top");
+  const getTopPostsUIDs = await axios.get("/blog/posts/top", {
+    baseURL: process.env.API_URL
+  });
   const topUIDs = getTopPostsUIDs.data.map(item => item.prismicId);
   const api = await _initApi();
   return await api.query(

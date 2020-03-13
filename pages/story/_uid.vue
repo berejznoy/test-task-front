@@ -40,6 +40,14 @@
       </v-row>
     </v-card-actions>
   </v-card>
+    <v-card
+      max-width="800"
+      class="mx-auto elevation-2 card"
+      id="comments">
+      <v-card-title> Комментарии </v-card-title>
+      <v-card-text>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -65,20 +73,21 @@
     data() {
       return {
         rating: 0,
-        stars: 0,
-        rateData: undefined,
+        stars: 0
       }
     },
     async asyncData({params, payload, $moment, $axios}) {
       let response = {};
       if (payload) response = payload;
       else {
-        response = await getPostByUid('post', `${params.uid}`);
+        const postData = await getPostByUid('post', `${params.uid}`);
+        const rateData = await $axios.$get(`/blog/post/prismic/${postData.id}`);
+        response = {...postData, rateData}
       }
-      const rateData = await $axios.$get(`/blog/post/prismic/${response.id}`);
+
       const header = PrismicDom.RichText.asText(response.data.post_title);
       const content = PrismicDom.RichText.asHtml(response.data.post_body);
-      const date = $moment(response.data.public_date).format('DD.MM.YYYY');
+      const date = $moment(response.first_publication_date).format('DD.MM.YYYY');
       const logo = response.data.post_image;
       const tags = response.tags;
       return {
@@ -87,8 +96,7 @@
         date,
         logo,
         tags,
-        rating: rateData.star,
-        rateData,
+        rating: response.rateData.star,
         response
       };
     },
@@ -100,15 +108,15 @@
     },
     watch: {
       async stars(newVal, oldVal) {
-        const vote = oldVal ? this.rateData.voting : this.rateData.voting + 1;
-        const star = oldVal ? this.rateData.rating - oldVal + newVal : this.rateData.rating + newVal;
-          const {post} = await this.$axios.$put(`/blog/edit?postID=${this.rateData._id}`, {
+        const vote = oldVal ? this.response.rateData.voting : this.response.rateData.voting + 1;
+        const star = oldVal ? this.response.rateData.rating - oldVal + newVal : this.response.rateData.rating + newVal;
+          const {post} = await this.$axios.$put(`/blog/edit?postID=${this.response.rateData._id}`, {
             prismicId: this.response.id,
             rating: star,
             voting: vote,
             star: (star/vote).toFixed(1)
           });
-          this.rateData = post;
+          this.response.rateData = post;
           this.rating = post.star
       }
     },

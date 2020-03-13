@@ -6,7 +6,7 @@
       >
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="headline text-center">{{item.data.post_title[0] && item.data.post_title[0].text}}</v-list-item-title>
+            <v-list-item-title style="cursor:pointer;" @click="$router.push(`/story/${item.uid}`)" class="headline text-center">{{item.data.post_title[0] && item.data.post_title[0].text}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-img
@@ -16,12 +16,13 @@
           height="200"
         ></v-img>
         <v-card-text>
-          <p class="mb-0" style="overflow: hidden; height: 110px" ref="cardText" :style="{color: $vuetify.theme.themes[$customTheme].color}"> {{item.data.post_announce[0] && item.data.post_announce[0].text}} </p>
+          <p class="mb-0" :style="{color: $vuetify.theme.themes[$customTheme].color}"> {{item.data.post_announce[0] && item.data.post_announce[0].text | cropText}} </p>
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-btn nuxt :to="`/story/${item.uid}`"> Читать </v-btn>
           <v-spacer></v-spacer>
           <shared-components :uid="item.uid"/>
+            <v-btn nuxt :to="`/story/${item.uid}/#comments`" icon><v-icon small>mdi-comment-text-multiple</v-icon></v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -39,17 +40,14 @@
             type: Array
           }
       },
-      mounted() {
-        const el = this.$refs.cardText;
-        el.forEach(item => {
-          let keep = item.innerHTML
-          while (item.scrollHeight > item.offsetHeight) {
-            item.innerHTML = keep;
-            item.innerHTML = item.innerHTML.substring(0, item.innerHTML.length - 1);
-            keep = item.innerHTML;
-            item.innerHTML = item.innerHTML + "...";
+      filters: {
+        cropText: (text) => {
+          if (text.length > 185){
+            const lastSpace = text.substr(0, 185).lastIndexOf(' ');
+            return text.substr(0, lastSpace) + '...';
           }
-        })
+          else return text
+        }
       }
     }
 </script>
