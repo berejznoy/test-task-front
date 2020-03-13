@@ -1,7 +1,7 @@
 <template>
   <div class="my-3">
     <div class="fixed-arrow hidden-xs-only">
-    <v-btn icon @click="$router.go(-1)"> <v-icon>mdi-chevron-left</v-icon></v-btn>
+    <v-btn icon @click="$router.push('/')"> <v-icon>mdi-chevron-left</v-icon></v-btn>
     </div>
   <v-card
     max-width="800"
@@ -12,14 +12,15 @@
         <p class="headline text-center">{{header}}</p>
         <v-row justify="space-between">
           <v-col cols="8" class="text-left"><p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-account</v-icon><i>@robot</i> - {{date}}</p></v-col>
-          <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>4/5</p></v-col>
+          <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{rating}}</p></v-col>
         </v-row>
       </v-list-item-content>
     </v-list-item>
 
     <v-img
       class="mb-3"
-      :src="logo"
+      :src="logo.url"
+      :alt="logo.alt"
       height="200"
     ></v-img>
 
@@ -30,7 +31,7 @@
       <v-row justify="space-between" style="width: 100%">
         <v-col cols="8" class="text-left pl-0">
       <div>
-        <v-rating :background-color="getColor" :color="getColor" v-model="rating"></v-rating>
+        <v-rating :background-color="getColor" :color="getColor" v-model="stars" ></v-rating>
       </div>
         </v-col>
         <v-col cols="4" class="text-right">
@@ -39,39 +40,64 @@
       </v-row>
     </v-card-actions>
   </v-card>
+    <v-card
+      max-width="800"
+      class="mx-auto elevation-2 card"
+      id="comments">
+      <v-card-title> Комментарии </v-card-title>
+      <v-card-text>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
 <script>
   import PrismicDom from "prismic-dom"
   import SharedComponents from '../../components/commons/SharedComponents'
-  import algoliasearch from "algoliasearch/lite";
   import {getPostByUid} from '../../utils/prismic'
 
   export default {
     components: {SharedComponents},
-    validate ({ params }) {
+    validate({params}) {
       return !!params.uid
     },
-    data(){
+    head(ctx) {
       return {
-        rating: null,
-        searchClient: algoliasearch(
-          '84CRV6FPGO',
-          '487c27ce38954b19d8facd77889d3a66'),
+        title: ctx.header,
+        meta: [
+          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+          {hid: 'description', name: 'description', content: 'My custom description'},
+        ]
       }
     },
-    async asyncData(ctx) {
-      const results = await getPostByUid('post', `${ctx.params.uid}`);
-      const header = PrismicDom.RichText.asText(results.data.post_title);
-      const content = PrismicDom.RichText.asHtml(results.data.post_body);
-      const date = ctx.$moment(results.data.public_date).format('DD.MM.YYYY');
-      const logo = results.data.post_image.url;
+    data() {
+      return {
+        rating: 0,
+        stars: 0
+      }
+    },
+    async asyncData({params, payload, $moment, $axios}) {
+      let response = {};
+      if (payload) response = payload;
+      else {
+        const postData = await getPostByUid('post', `${params.uid}`);
+        const rateData = await $axios.$get(`/blog/post/prismic/${postData.id}`);
+        response = {...postData, rateData}
+      }
+
+      const header = PrismicDom.RichText.asText(response.data.post_title);
+      const content = PrismicDom.RichText.asHtml(response.data.post_body);
+      const date = $moment(response.first_publication_date).format('DD.MM.YYYY');
+      const logo = response.data.post_image;
+      const tags = response.tags;
       return {
         header,
         content,
         date,
-        logo
+        logo,
+        tags,
+        rating: response.rateData.star,
+        response
       };
     },
     computed: {
@@ -79,8 +105,23 @@
         if (this.$vuetify.theme.dark === true) return 'white';
         else return "rgba(0, 0, 0, 0.6)"
       }
-    }
+    },
+    watch: {
+      async stars(newVal, oldVal) {
+        const vote = oldVal ? this.response.rateData.voting : this.response.rateData.voting + 1;
+        const star = oldVal ? this.response.rateData.rating - oldVal + newVal : this.response.rateData.rating + newVal;
+          const {post} = await this.$axios.$put(`/blog/edit?postID=${this.response.rateData._id}`, {
+            prismicId: this.response.id,
+            rating: star,
+            voting: vote,
+            star: (star/vote).toFixed(1)
+          });
+          this.response.rateData = post;
+          this.rating = post.star
+      }
+    },
   }
+
 </script>
 
 <style scoped>

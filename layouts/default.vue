@@ -7,22 +7,53 @@
       clipped
     >
       <v-list dense>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-view-dashboard</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Menu 1</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-settings</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Menu 2</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <template v-for="item in menuItems">
+          <v-list-group
+            v-if="item.children"
+            :key="item.text"
+            v-model="item.model"
+            :prepend-icon="item.staticIcon"
+            :append-icon="item.model ? item.icon : item['icon-alt']"
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ item.text }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-for="(child, i) in item.children"
+              :key="i"
+              nuxt
+              :to="child.path"
+            >
+              <v-list-item-action v-if="child.icon">
+                <v-icon>{{ child.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ child.text }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-item
+            v-else
+            :key="item.text"
+            nuxt
+            :to="item.path"
+          >
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ item.text }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
@@ -30,8 +61,8 @@
       clipped-left
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon v-if="this.$route.name === 'story-uid'" class="hidden-md-and-up" @click="$router.go(-1)"> <v-icon>mdi-chevron-left</v-icon></v-btn>
-      <v-toolbar-title class="ml-2 pl-0" @click="$router.push('/')" >Страшные истории</v-toolbar-title>
+      <v-btn icon v-if="this.$route.name === 'story-uid'" class="hidden-md-and-up" @click="$router.push('/')"> <v-icon>mdi-chevron-left</v-icon></v-btn>
+      <v-toolbar-title class="ml-2 pl-0" style="cursor: pointer" @click="$router.push('/')" >Страшные истории</v-toolbar-title>
       <v-spacer></v-spacer>
       <search />
       <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
@@ -77,9 +108,28 @@
     data: () => ({
       drawer: null,
       fab: null,
-      isSearchBlockClose: false
+      isSearchBlockClose: false,
+      menuItems: [
+        { icon: 'mdi-ghost', text: 'Главная',  path: '/' },
+        {icon: 'mdi-star-circle',  text: 'Рейтинговые',  path: '/top'},
+        { icon: 'mdi-chevron-up',
+          'icon-alt': 'mdi-chevron-down',
+          staticIcon: "mdi-sort",
+          text: 'Категории',
+          model: false,
+          children: [
+            {icon: 'mdi-mdi',  text: 'Призраки', path: '/category/призраки'},
+            {icon: 'mdi-mdi',  text: 'Вампиры', path: '/category/вампиры'},
+            {icon: 'mdi-mdi',  text: 'Монстры', path: '/category/монстры'},
+            {icon: 'mdi-mdi',  text: 'Демоны', path: '/category/демоны'},
+            {icon: 'mdi-mdi',  text: 'Разное', path: '/category/разное'},
+          ],
+        },
+        {icon: 'mdi-plus',  text: 'Добавить историю'},
+  ],
     }),
     methods: {
+      check: (tag) => console.log(tag),
       onScroll (e) {
         if (typeof window === 'undefined') return
         const top = window.pageYOffset ||   e.target.scrollTop || 0
@@ -97,7 +147,7 @@
     },
     created () {
       const hour = new Date().getHours().toLocaleString();
-      if (hour > 7 && hour < 21) this.$vuetify.theme.dark = false
+      if (hour > 7 && hour < 20) this.$vuetify.theme.dark = false
     },
   }
 </script>

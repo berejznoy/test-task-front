@@ -1,40 +1,57 @@
 import colors from 'vuetify/lib/util/colors'
 import {getAllPosts} from './utils/prismic'
-require('dotenv').config()
+import axios from "axios";
+require('dotenv').config();
 
 module.exports = {
   generate: {
     async routes() {
       const items = await getAllPosts("document.type", "post");
-      return items.results.map(item => {
+      const categories = await getAllPosts("document.type", "category");
+      const posts = await Promise.all(items.results.map(async item => {
+        const rateData = await axios.get(`/blog/post/prismic/${item.id}` ,{
+          baseURL: process.env.API_URL
+        });
         return {
-          route: `/story/${item.uid}`
+          route: `/story/${item.uid}`,
+          payload: {...item, rateData: rateData.data}
         }
-      })
+      }));
+      const allCategories = categories.results.map(item => {
+        return {
+          route: `/category/${item.data.name}`
+        }
+      });
+      return [...allCategories, ...posts]
     }
   },
   /*
   ** Headers of the page
   */
   head: {
-    title: 'screep',
+    title: 'Страшные истории',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Blog about creepy stories' }
+      { hid: 'description', name: 'description', content: 'Блог о страшных историях.' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  css: [],
+  env: {
+    baseUrl: process.env.API_URL || 'http://localhost:4000'
+  },
   plugins: [
     { src: '~/plugins/clipboard' },
     { src: '~/plugins/mixins' },
     { src: '~/plugins/algolia' }
   ],
-  buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv'],
+  buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv', '@nuxtjs/axios'],
   modules: ['nuxt-webfontloader'],
+  axios: {
+   baseURL: "https://screep-rating-service.now.sh"
+  },
   webfontloader: {
     google: {
       families: ['Montserrat:400,500,600,700,800&display=swap&subset=cyrillic']
