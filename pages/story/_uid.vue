@@ -43,10 +43,13 @@
     <v-card
       max-width="800"
       class="mx-auto elevation-2 card"
-      id="comments">
+      light
+    >
       <v-card-title> Комментарии </v-card-title>
       <v-card-text>
-        <div id="commento"></div>
+        <div id="commento">
+          <vue-disqus shortname="screep"/>
+        </div>
       </v-card-text>
     </v-card>
   </div>
@@ -56,9 +59,10 @@
   import PrismicDom from "prismic-dom"
   import SharedComponents from '../../components/commons/SharedComponents'
   import {getPostByUid} from '../../utils/prismic'
+  import VueDisqus from "../../components/commons/Disqus";
 
   export default {
-    components: {SharedComponents},
+    components: {VueDisqus, SharedComponents},
     validate({params}) {
       return !!params.uid
     },
