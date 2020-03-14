@@ -22,7 +22,7 @@
           <v-btn nuxt :to="`/story/${item.uid}`"> Читать </v-btn>
           <v-spacer></v-spacer>
           <shared-components :uid="item.uid"/>
-            <v-btn nuxt :to="`/story/${item.uid}/#comments`" icon><v-icon small>mdi-comment-text-multiple</v-icon></v-btn>
+            <v-btn nuxt :to="`/story/${item.uid}/#commento`" icon><v-icon small>mdi-comment-text-multiple</v-icon></v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
