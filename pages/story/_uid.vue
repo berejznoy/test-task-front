@@ -9,9 +9,9 @@
   >
     <v-list-item>
       <v-list-item-content>
-        <p class="headline text-center">{{header}}</p>
+        <h2 class="headline text-center">{{header}}</h2>
         <v-row justify="space-between">
-          <v-col cols="8" class="text-left"><p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-account</v-icon><i>@robot</i> - {{date}}</p></v-col>
+          <v-col cols="8" class="text-left"><p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-calendar-range</v-icon>{{date}}</p></v-col>
           <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{rating}}</p></v-col>
         </v-row>
       </v-list-item-content>
@@ -61,18 +61,30 @@
     validate({params}) {
       return !!params.uid
     },
-    head(ctx) {
+    head() {
       return {
-        title: ctx.header,
+        title: PrismicDom.RichText.asText(this.response.data.meta_title),
+        link: [
+          {
+            rel: 'canonical',
+            href: `https://screep.ru/story/${this.$route.params.uid}`
+          }
+        ],
         meta: [
-          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
-          {hid: 'description', name: 'description', content: 'My custom description'},
+          {
+            hid: 'description',
+            name: 'description',
+            content: PrismicDom.RichText.asText(this.response.data.meta_description)},
+          {
+            hid: `keywords`,
+            name: 'keywords',
+            keywords: this.response.data.meta_keywords
+          }
         ]
       }
     },
     data() {
       return {
-        rating: 0,
         stars: 0
       }
     },

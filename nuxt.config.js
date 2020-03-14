@@ -7,7 +7,7 @@ module.exports = {
   generate: {
     async routes() {
       const items = await getAllPosts("document.type", "post");
-      const categories = await getAllPosts("document.type", "category");
+      const categories = await getAllPosts("document.type", "category")
       const posts = await Promise.all(items.results.map(async item => {
         const rateData = await axios.get(`/blog/post/prismic/${item.id}` ,{
           baseURL: process.env.API_URL
@@ -19,7 +19,8 @@ module.exports = {
       }));
       const allCategories = categories.results.map(item => {
         return {
-          route: `/category/${item.data.name}`
+          route: `/category/${item.uid}`,
+          payload: {uid: item.uid, name:item.data.category_name }
         }
       });
       return [...allCategories, ...posts]
@@ -48,9 +49,19 @@ module.exports = {
     { src: '~/plugins/algolia' }
   ],
   buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv', '@nuxtjs/axios'],
-  modules: ['nuxt-webfontloader'],
+  modules: ['nuxt-webfontloader', '@nuxtjs/sitemap', '@nuxtjs/robots'],
   axios: {
-   baseURL: "https://screep-rating-service.now.sh"
+   baseURL:  process.env.baseUrl
+  },
+  sitemap: {
+    hostname: 'https://screep.ru',
+    gzip: true
+  },
+  robots: {
+    UserAgent: '*',
+    Disallow: '/category/',
+    Sitemap: 'https://screep.ru/sitemap.xml',
+    Host: 'https://screep.ru'
   },
   webfontloader: {
     google: {

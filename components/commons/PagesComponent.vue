@@ -42,8 +42,9 @@
       },
       filters: {
         cropText: (text) => {
-          if (text.length > 185){
-            const lastSpace = text.substr(0, 185).lastIndexOf(' ');
+          const length = 156;
+          if (text.length > length){
+            const lastSpace = text.substr(0, length).lastIndexOf(' ');
             return text.substr(0, lastSpace) + '...';
           }
           else return text

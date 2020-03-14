@@ -5,12 +5,19 @@
 <script>
 import {getPostsByTag} from '../../utils/prismic'
 import PagesComponent from "../../components/commons/PagesComponent";
+import {dictionary} from "../../config/dictionary";
 
 export default {
   components: {PagesComponent},
-  async asyncData(vm) {
-    const tag = vm.route.params.name[0].toUpperCase() + vm.route.params.name.slice(1);
-    const items = await getPostsByTag("document.tags", tag);
+  async asyncData({params, payload}) {
+    let response = {};
+    if (payload) response = payload;
+    else {
+      response.uid = params.name;
+      response.name = dictionary[params.name];
+      console.log(response.uid)
+    }
+    const items = await getPostsByTag("document.tags", response.name);
     return {
       items: items.results
     };
