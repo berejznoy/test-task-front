@@ -9,7 +9,7 @@
   >
     <v-list-item>
       <v-list-item-content>
-        <h2 class="headline text-center">{{header}}</h2>
+        <h1 class="headline text-center">{{header}}</h1>
         <v-row justify="space-between">
           <v-col cols="8" class="text-left"><p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-calendar-range</v-icon>{{date}}</p></v-col>
           <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{rating}}</p></v-col>
@@ -43,6 +43,7 @@
     <v-card
       max-width="800"
       class="mx-auto elevation-2"
+      light
     >
       <v-card-title> Комментарии </v-card-title>
       <v-card-text>
@@ -140,22 +141,12 @@
 
 </script>
 
-<style>
-  .commento-card {
-    border-top: none !important;
-  }
-  .commento-name {
-    color: #6c7073 !important;
-  }
-  .commento-body p {
-    color: #6c7073;
-  }
-  .commento-option-button {
-    background-color: #6c7073 !important;
-  }
+<style scoped>
+
   .fixed-arrow {
     position: fixed;
     z-index: 1000
   }
+
 </style>
 
