@@ -49,19 +49,13 @@ module.exports = {
     { src: '~/plugins/algolia' }
   ],
   buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv', '@nuxtjs/axios'],
-  modules: ['nuxt-webfontloader', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+  modules: ['nuxt-webfontloader', '@nuxtjs/sitemap'],
   axios: {
    baseURL:  process.env.baseUrl
   },
   sitemap: {
     hostname: 'https://screep.ru',
     gzip: true
-  },
-  robots: {
-    UserAgent: '*',
-    Disallow: '/category/',
-    Sitemap: 'https://screep.ru/sitemap.xml',
-    Host: 'https://screep.ru'
   },
   webfontloader: {
     google: {

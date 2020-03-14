@@ -144,11 +144,7 @@
         if (this.$vuetify.theme.dark === true) return 'mdi-white-balance-sunny';
         else return "mdi-weather-night"
       }
-    },
-    created () {
-      const hour = new Date().getHours().toLocaleString();
-      if (hour > 7 && hour < 20) this.$vuetify.theme.dark = false
-    },
+    }
   }
 </script>
 <style>
