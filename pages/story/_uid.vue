@@ -46,6 +46,7 @@
       id="comments">
       <v-card-title> Комментарии </v-card-title>
       <v-card-text>
+        <div id="commento"></div>
       </v-card-text>
     </v-card>
   </div>
@@ -136,7 +137,19 @@
 
 </script>
 
-<style scoped>
+<style>
+  .commento-card {
+    border-top: none !important;
+  }
+  .commento-name {
+    color: #6c7073 !important;
+  }
+  .commento-body p {
+    color: #6c7073;
+  }
+  .commento-option-button {
+    background-color: #6c7073 !important;
+  }
   .fixed-arrow {
     position: fixed;
     z-index: 1000

@@ -36,6 +36,9 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: 'Страшные, жуткие, таинственные и мистические истории. Реальные и не очень...' }
     ],
+    script: [
+      { src: 'http://104.248.43.198:8080/js/commento.js', defer: true }
+    ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
