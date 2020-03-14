@@ -42,8 +42,7 @@
   </v-card>
     <v-card
       max-width="800"
-      class="mx-auto elevation-2 card"
-      light
+      class="mx-auto elevation-2"
     >
       <v-card-title> Комментарии </v-card-title>
       <v-card-text>
