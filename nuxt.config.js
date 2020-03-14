@@ -30,11 +30,11 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'Страшные истории',
+    title: 'Страшные истории - блог для любителей мистики и жути',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Блог о страшных историях.' }
+      { hid: 'description', name: 'description', content: 'Страшные, жуткие, таинственные и мистические истории. Реальные и не очень...' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
