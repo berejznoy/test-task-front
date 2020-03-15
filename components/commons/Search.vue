@@ -47,7 +47,7 @@
     <transition name="fade">
       <v-card :class="{'fullscreen-search-box': !$vuetify.breakpoint.xsOnly}" v-if="this.items.length">
         <v-list three-line >
-          <template v-for="(item) in items">
+          <template v-for="(item, index) in items">
             <v-subheader
               v-if="item.header && !item.found"
               :key="item.header"
@@ -57,7 +57,7 @@
             </v-subheader>
             <v-subheader
               v-else-if="item.header && item.found"
-              :key="item.header"
+              :key="item.uid"
             >
               <v-row justify="space-between">
                 <p class="mb-0 ml-3">{{item.header}}</p>
@@ -66,26 +66,26 @@
             </v-subheader>
             <v-divider
               v-else-if="item.divider"
-              :key="item.id"
+              :key="index"
               :inset="item.inset"
             ></v-divider>
             <v-list-item
               v-else
-              :key="item.id"
+              :key="item.uid"
               @click="redirect(item.uid)"
             >
               <v-list-item-avatar>
-                <v-img :src="item.data.post_image.url"></v-img>
+                <v-img :src="item.post_image.url"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content>
                 <v-list-item-title>
                   <v-row justify="space-between" align="center" class="px-3">
-                    <p class="mb-0">{{item.data.post_title[0].text}}</p>
-                    <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{item.rating}}</p>
+                    <p class="mb-0">{{item.post_title[0].text}}</p>
+                    <p class="caption mb-0">{{item.star}} <v-icon small class="mb-1 mr-2">mdi-star</v-icon></p>
                   </v-row>
                 </v-list-item-title>
-                <v-list-item-subtitle>{{item.data.post_announce[0].text}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.post_announce[0].text}}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -124,13 +124,13 @@
         async search() {
           try {
             this.loading = true;
-            const {results} = await findPostByText("document.type", "post", 'document', this.query);
-            if(results.length) {
-              this.items = results.reduce((acc, cur, index) => {
-                if(results[index + 1]) return [...acc, cur,   { divider: true, inset: true }];
-                else return [...acc, cur]
-              }, [{ header: 'Найдено:', found: true }])
-            } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }]
+            const results = await findPostByText("document.type", "post", 'document', this.query);
+            if (Object.keys(results).length) {
+              this.items = [{ header: 'Найдено:', found: true }];
+              for (let key in results) {
+                if (results.hasOwnProperty(key)) this.items = [...this.items, results[key],  { divider: true, inset: false }];
+              }
+            } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }];
           } catch (e) {
             console.error(e)
           } finally {
