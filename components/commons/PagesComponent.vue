@@ -6,7 +6,7 @@
       >
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title style="cursor:pointer;" @click="$router.push(`/story/${item.uid}`)" class="headline text-center">{{item.data.post_title[0] && item.data.post_title[0].text}}</v-list-item-title>
+            <v-list-item-title style="cursor:pointer;" @click="$router.push(`/story/${item.uid}`)" class="headline text-center">{{item.data.post_title[0].text}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-img
@@ -16,7 +16,7 @@
           height="200"
         ></v-img>
         <v-card-text>
-          <p class="mb-0" :style="{color: $vuetify.theme.themes[$customTheme].color}"> {{item.data.post_announce[0] && item.data.post_announce[0].text | cropText}} </p>
+          <p class="mb-0" :style="{color: $vuetify.theme.themes[$customTheme].color}"> {{item.data.post_announce[0].text | cropText}} </p>
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-btn nuxt :to="`/story/${item.uid}`"> Читать </v-btn>

@@ -131,8 +131,8 @@ export default {
 	methods: {
 		check: (tag) => console.log(tag),
 		onScroll (e) {
-			if (typeof window === 'undefined') return
-			const top = window.pageYOffset ||   e.target.scrollTop || 0
+			if (typeof window === 'undefined') return;
+			const top = window.pageYOffset ||   e.target.scrollTop || 0;
 			this.fab = top > 20
 		},
 		toTop () {
