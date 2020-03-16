@@ -30,27 +30,27 @@
 </template>
 
 <script>
-    import SharedComponents from "./SharedComponents";
+import SharedComponents from "./SharedComponents";
 
-    export default {
-        name: "PagesComponent",
-      components: {SharedComponents},
-      props: {
-          items: {
-            type: Array
-          }
-      },
-      filters: {
-        cropText: (text) => {
-          const length = 156;
-          if (text.length > length){
-            const lastSpace = text.substr(0, length).lastIndexOf(' ');
-            return text.substr(0, lastSpace) + '...';
-          }
-          else return text
-        }
-      }
-    }
+export default {
+	name: "PagesComponent",
+	components: {SharedComponents},
+	props: {
+		items: {
+			type: Array
+		}
+	},
+	filters: {
+		cropText: (text) => {
+			const length = 156;
+			if (text.length > length){
+				const lastSpace = text.substr(0, length).lastIndexOf(' ');
+				return text.substr(0, lastSpace) + '...';
+			}
+			else return text
+		}
+	}
+}
 </script>
 
 <style scoped>

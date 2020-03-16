@@ -81,7 +81,7 @@
               <v-list-item-content>
                 <v-list-item-title>
                   <v-row justify="space-between" align="center" class="px-3">
-                    <p class="mb-0">{{item.post_title[0].text}}</p>
+                    <p class="mb-0" style="text-overflow: ellipsis; width: 85%; overflow: hidden">{{item.post_title[0].text}}</p>
                     <p class="caption mb-0">{{item.star}} <v-icon small class="mb-1 mr-2">mdi-star</v-icon></p>
                   </v-row>
                 </v-list-item-title>
@@ -96,49 +96,48 @@
 </template>
 
 <script>
-    import {findPostByText} from "../../utils/prismic";
-
-    export default {
-        name: "Search.vue",
-      props: {
-          isMobile: Boolean,
-          isClose: Boolean
-      },
-      data: () => {
-          return {
-            width: '500px',
-            query: "",
-            items: [],
-            loading: false
-          }
-      },
-      methods: {
-        redirect(uid) {
-          this.$router.push(`/story/${uid}`);
-          this.closeSearchMenu()
-        },
-        closeSearchMenu() {
-          this.items = [];
-          this.query = ''
-        },
-        async search() {
-          try {
-            this.loading = true;
-            const results = await findPostByText("document.type", "post", 'document', this.query);
-            if (Object.keys(results).length) {
-              this.items = [{ header: 'Найдено:', found: true }];
-              for (let key in results) {
-                if (results.hasOwnProperty(key)) this.items = [...this.items, results[key],  { divider: true, inset: false }];
-              }
-            } else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }];
-          } catch (e) {
-            console.error(e)
-          } finally {
-            this.loading = false
-          }
-        }
-      }
-    }
+import {findPostByText} from "../../utils/prismic";
+export default {
+	name: "Search.vue",
+	props: {
+		isMobile: Boolean,
+		isClose: Boolean
+	},
+	data: () => {
+		return {
+			width: '500px',
+			query: "",
+			items: [],
+			loading: false
+		}
+	},
+	methods: {
+		redirect(uid) {
+			this.$router.push(`/story/${uid}`);
+			this.closeSearchMenu()
+		},
+		closeSearchMenu() {
+			this.items = [];
+			this.query = ''
+		},
+		async search() {
+			try {
+				this.loading = true;
+				const results = await findPostByText("document.type", "post", 'document', this.query);
+				if (Object.keys(results).length) {
+					this.items = [{ header: 'Найдено:', found: true }];
+					for (let key in results) {
+						if (results.hasOwnProperty(key)) this.items = [...this.items, results[key],  { divider: true, inset: false }];
+					}
+				} else this.items = [{ header: 'По вашему запросу ничего не найдено', found: false }];
+			} catch (e) {
+				console.error(e)
+			} finally {
+				this.loading = false
+			}
+		}
+	}
+}
 </script>
 
 <style scoped>

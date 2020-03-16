@@ -17,27 +17,27 @@
 </template>
 
 <script>
-    export default {
-        name: "SharedComponents.vue",
-      props: {
-          uid: {
-            type: String
-          }
-      },
-      data() {
-        return {
-          sharedShow: false,
-          snackbar: false
-        }
-      },
-      methods: {
-          copyLink() {
-            if (this.uid) this.$copyText(`${window.location.hostname}/story/${this.uid}`);
-            else console.log(this.$route);
-          this.snackbar = !this.snackbar
-        }
-      }
-    }
+export default {
+	name: "SharedComponents.vue",
+	props: {
+		uid: {
+			type: String
+		}
+	},
+	data() {
+		return {
+			sharedShow: false,
+			snackbar: false
+		}
+	},
+	methods: {
+		copyLink() {
+			if (this.uid) this.$copyText(`${window.location.hostname}/story/${this.uid}`);
+			else console.log(this.$route);
+			this.snackbar = !this.snackbar
+		}
+	}
+}
 </script>
 
 <style scoped>

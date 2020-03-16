@@ -56,88 +56,104 @@
 </template>
 
 <script>
-  import PrismicDom from "prismic-dom"
-  import SharedComponents from '../../components/commons/SharedComponents'
-  import {getPostByUid} from '../../utils/prismic'
-  import VueDisqus from "../../components/commons/Disqus";
+import PrismicDom from "prismic-dom"
+import SharedComponents from '../../components/commons/SharedComponents'
+import {getPostByUid} from '../../utils/prismic'
+import VueDisqus from "../../components/commons/Disqus";
 
-  export default {
-    components: {VueDisqus, SharedComponents},
-    validate({params}) {
-      return !!params.uid
-    },
-    head() {
-      return {
-        title: PrismicDom.RichText.asText(this.response.data.meta_title),
-        link: [
-          {
-            rel: 'canonical',
-            href: `https://screep.ru/story/${this.$route.params.uid}`
-          }
-        ],
-        meta: [
-          {
-            hid: 'description',
-            name: 'description',
-            content: PrismicDom.RichText.asText(this.response.data.meta_description)},
-          {
-            hid: `keywords`,
-            name: 'keywords',
-            keywords: this.response.data.meta_keywords
-          }
-        ]
-      }
-    },
-    data() {
-      return {
-        stars: 0
-      }
-    },
-    async asyncData({params, payload, $moment, $axios}) {
-      let response = {};
-      if (payload) response = payload;
-      else {
-        const postData = await getPostByUid('post', `${params.uid}`);
-        const rateData = await $axios.$get(`/blog/post/prismic/${postData.id}`);
-        response = {...postData, rateData}
-      }
-
-      const header = PrismicDom.RichText.asText(response.data.post_title);
-      const content = PrismicDom.RichText.asHtml(response.data.post_body);
-      const date = $moment(response.first_publication_date).format('DD.MM.YYYY');
-      const logo = response.data.post_image;
-      const tags = response.tags;
-      return {
-        header,
-        content,
-        date,
-        logo,
-        tags,
-        rating: response.rateData.star,
-        response
-      };
-    },
-    computed: {
-      getColor() {
-        if (this.$vuetify.theme.dark === true) return 'white';
-        else return "rgba(0, 0, 0, 0.6)"
-      }
-    },
-    watch: {
-      async stars(newVal, oldVal) {
-        const vote = oldVal ? this.response.rateData.voting : this.response.rateData.voting + 1;
-        const star = oldVal ? this.response.rateData.rating - oldVal + newVal : this.response.rateData.rating + newVal;
-          const {post} = await this.$axios.$put(`/blog/edit?postID=${this.response.rateData._id}`, {
-            prismicId: this.response.id,
-            rating: star,
-            voting: vote,
-            star: (star/vote).toFixed(1)
-          });
-          this.response.rateData = post;
-          this.rating = post.star
-      }
-    },
-  }
+export default {
+	components: {VueDisqus, SharedComponents},
+	validate({params}) {
+		return !!params.uid
+	},
+	head() {
+		return {
+			title: PrismicDom.RichText.asText(this.meta_title),
+			link: [
+				{
+					rel: 'canonical',
+					href: `https://screep.ru/story/${this.$route.params.uid}`
+				}
+			],
+			meta: [
+				{
+					hid: 'description',
+					name: 'description',
+					content: PrismicDom.RichText.asText(this.meta_description)},
+				{
+					hid: `keywords`,
+					name: 'keywords',
+					keywords: this.meta_keywords
+				}
+			]
+		}
+	},
+	data() {
+		return {
+			stars: 0
+		}
+	},
+	/**
+     * Наполнение страницы при генерации и локально
+     * @param params - параметры роутера
+     * @param $moment
+     * @param $axios
+     * @returns {Promise<{date: *, meta_description, data: *, meta_title, rating: number, header: *, logo, meta_keywords, content: *, rateData: any, tags}>}
+     */
+	async asyncData({params, $moment, $axios}) {
+		const {
+			data: {
+				post_title,
+				post_body,
+				post_image,
+				meta_keywords,
+				meta_description,
+				meta_title
+			},
+			id,
+			first_publication_date,
+			tags
+		} = await getPostByUid('post', `${params.uid}`);
+		const rateData = await $axios.$get(`/blog/post/prismic/${id}`);
+		return {
+			header: PrismicDom.RichText.asText(post_title),
+			content: PrismicDom.RichText.asHtml(post_body),
+			date: $moment(first_publication_date).format('DD.MM.YYYY'),
+			logo: post_image,
+			tags,
+			rating: rateData.star,
+			rateData,
+			id,
+			meta_keywords,
+			meta_title,
+			meta_description
+		};
+	},
+	computed: {
+		getColor() {
+			if (this.$vuetify.theme.dark === true) return 'white';
+			else return "rgba(0, 0, 0, 0.6)"
+		}
+	},
+	async mounted() {
+		this.rateData = await this.$axios.$get(`/blog/post/prismic/${this.id}`)
+		this.rating = this.rateData.star
+	},
+	watch: {
+		async stars(newVal, oldVal) {
+			const vote = oldVal ? this.rateData.voting : this.rateData.voting + 1;
+			const star = oldVal ? this.rateData.rating - oldVal + newVal : this.rateData.rating + newVal;
+			const {post} = await this.$axios.$put(`/blog/edit?postID=${this.rateData._id}`, {
+				prismicId: this.id,
+				rating: star,
+				voting: vote,
+				star: (star/vote).toFixed(1)
+			});
+			this.rateData = post;
+			this.rating = post.star
+		}
+	},
+}
 
 </script>
 

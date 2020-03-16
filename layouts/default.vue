@@ -98,54 +98,54 @@
 </template>
 
 <script>
-  import Search from "../components/commons/Search"
+import Search from "../components/commons/Search"
 
-  export default {
-    components: {Search},
-    props: {
-      source: String,
-    },
-    data: () => ({
-      drawer: null,
-      fab: null,
-      isSearchBlockClose: false,
-      menuItems: [
-        { icon: 'mdi-ghost', text: 'Главная',  path: '/' },
-        {icon: 'mdi-star-circle',  text: 'Рейтинговые',  path: '/top'},
-        { icon: 'mdi-chevron-up',
-          'icon-alt': 'mdi-chevron-down',
-          staticIcon: "mdi-sort",
-          text: 'Категории',
-          model: false,
-          children: [
-            {icon: 'mdi-mdi',  text: 'Призраки', path: '/category/ghosts'},
-            {icon: 'mdi-mdi',  text: 'Вампиры', path: '/category/vampires'},
-            {icon: 'mdi-mdi',  text: 'Монстры', path: '/category/monsters'},
-            {icon: 'mdi-mdi',  text: 'Демоны', path: '/category/demons'},
-            {icon: 'mdi-mdi',  text: 'Разное', path: '/category/other'},
-          ],
-        },
-        {icon: 'mdi-plus',  text: 'Добавить историю'},
-  ],
-    }),
-    methods: {
-      check: (tag) => console.log(tag),
-      onScroll (e) {
-        if (typeof window === 'undefined') return
-        const top = window.pageYOffset ||   e.target.scrollTop || 0
-        this.fab = top > 20
-      },
-      toTop () {
-        this.$vuetify.goTo(0)
-      }
-    },
-    computed: {
-      themeIcon() {
-        if (this.$vuetify.theme.dark === true) return 'mdi-white-balance-sunny';
-        else return "mdi-weather-night"
-      }
-    }
-  }
+export default {
+	components: {Search},
+	props: {
+		source: String,
+	},
+	data: () => ({
+		drawer: null,
+		fab: null,
+		isSearchBlockClose: false,
+		menuItems: [
+			{ icon: 'mdi-ghost', text: 'Главная',  path: '/' },
+			{icon: 'mdi-star-circle',  text: 'Рейтинговые',  path: '/top'},
+			{ icon: 'mdi-chevron-up',
+				'icon-alt': 'mdi-chevron-down',
+				staticIcon: "mdi-sort",
+				text: 'Категории',
+				model: false,
+				children: [
+					{icon: 'mdi-mdi',  text: 'Призраки', path: '/category/ghosts'},
+					{icon: 'mdi-mdi',  text: 'Вампиры', path: '/category/vampires'},
+					{icon: 'mdi-mdi',  text: 'Монстры', path: '/category/monsters'},
+					{icon: 'mdi-mdi',  text: 'Демоны', path: '/category/demons'},
+					{icon: 'mdi-mdi',  text: 'Разное', path: '/category/other'},
+				],
+			},
+			{icon: 'mdi-plus',  text: 'Добавить историю'},
+		],
+	}),
+	methods: {
+		check: (tag) => console.log(tag),
+		onScroll (e) {
+			if (typeof window === 'undefined') return
+			const top = window.pageYOffset ||   e.target.scrollTop || 0
+			this.fab = top > 20
+		},
+		toTop () {
+			this.$vuetify.goTo(0)
+		}
+	},
+	computed: {
+		themeIcon() {
+			if (this.$vuetify.theme.dark === true) return 'mdi-white-balance-sunny';
+			else return "mdi-weather-night"
+		}
+	}
+}
 </script>
 <style>
   p{

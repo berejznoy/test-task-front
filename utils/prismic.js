@@ -5,61 +5,61 @@ import axios from "axios"
 const _initApi = async() => await Prismic.getApi(config.apiEndpoint, {accessToken: config.accessToken});
 
 export const getAllPosts = async(documentType, value) => {
-  const api = await _initApi();
-  return await api.query(
-    Prismic.Predicates.at(documentType, value),
-    { orderings : '[document.first_publication_date desc]' }
-  );
+	const api = await _initApi();
+	return await api.query(
+		Prismic.Predicates.at(documentType, value),
+		{ orderings : '[document.first_publication_date desc]' }
+	);
 };
 
 export const getTopPosts = async(documentType, value) => {
-  const getTopPostsUIDs = await axios.get("/blog/posts/top", {
-    baseURL: process.env.API_URL
-  });
-  const topUIDs = getTopPostsUIDs.data.map(item => item.prismicId);
-  const api = await _initApi();
-  return await api.query(
-    Prismic.Predicates.in('document.id', topUIDs)
-  );
+	const getTopPostsUIDs = await axios.get("/blog/posts/top", {
+		baseURL: process.env.API_URL
+	});
+	const topUIDs = getTopPostsUIDs.data.map(item => item.prismicId);
+	const api = await _initApi();
+	return await api.query(
+		Prismic.Predicates.in('document.id', topUIDs)
+	);
 };
 
 export const getPostByUid = async(type, uid) => {
-  const api = await _initApi();
-  return await api.getByUID(type, uid)
+	const api = await _initApi();
+	return await api.getByUID(type, uid)
 };
 
 export const findPostByText = async(documentType, value, type, text) => {
-  const api = await _initApi();
-  const response = await api.query([
-    Prismic.Predicates.at(documentType, value),
-    Prismic.Predicates.fulltext(type, text),
-  ], { pageSize : 10,   orderings : '[document.last_publication_date desc]' });
+	const api = await _initApi();
+	const response = await api.query([
+		Prismic.Predicates.at(documentType, value),
+		Prismic.Predicates.fulltext(type, text),
+	], { pageSize : 10,   orderings : '[document.last_publication_date desc]' });
 
-  const getResponseMap = response.results.reduce((acc, cur) => {
-    const data = {...cur.data, uid: cur.uid};
-    return {...acc, [cur.id]: data}
-  }, {});
+	const getResponseMap = response.results.reduce((acc, cur) => {
+		const data = {...cur.data, uid: cur.uid};
+		return {...acc, [cur.id]: data}
+	}, {});
 
-  const ratings = await axios.post("/blog/post/getPostsByPrismicIDs", {IDs: Object.keys(getResponseMap)}, {
-    baseURL: process.env.API_URL
-  });
-  ratings.data.forEach(item => {
-    getResponseMap[item.prismicId].star = item.star
-  });
-  return getResponseMap
+	const ratings = await axios.post("/blog/post/getPostsByPrismicIDs", {IDs: Object.keys(getResponseMap)}, {
+		baseURL: process.env.API_URL
+	});
+	ratings.data.forEach(item => {
+		getResponseMap[item.prismicId].star = item.star
+	});
+	return getResponseMap
 };
 export const getPostsByTag = async(documentType, tag) => {
-  const api = await _initApi();
-  return api.query([
-    Prismic.Predicates.at(documentType, [tag])
-  ], {  orderings : '[document.last_publication_date desc]' })
+	const api = await _initApi();
+	return api.query([
+		Prismic.Predicates.at(documentType, [tag])
+	], {  orderings : '[document.last_publication_date desc]' })
 };
 export const getPostsByField = async(field) => {
-  const api = await _initApi();
-  return api.query([
-    Prismic.Predicates.at('document.type', 'post'),
-    Prismic.Predicates.at('my.post.results.data.category.name', 'Разное')
-  ]);
+	const api = await _initApi();
+	return api.query([
+		Prismic.Predicates.at('document.type', 'post'),
+		Prismic.Predicates.at('my.post.results.data.category.name', 'Разное')
+	]);
 };
 
 
