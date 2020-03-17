@@ -135,7 +135,7 @@ export default {
 			else return "rgba(0, 0, 0, 0.6)"
 		}
 	},
-	async mounted() {
+	async beforeMount() {
 		this.rateData = await this.$axios.$get(`/blog/post/prismic/${this.id}`)
 		this.rating = this.rateData.star
 	},
