@@ -12,7 +12,7 @@
         <h1 class="headline text-center">{{header}}</h1>
         <v-row justify="space-between">
           <v-col cols="8" class="text-left"><p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-calendar-range</v-icon>{{date}}</p></v-col>
-          <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{rateData.rating}}</p></v-col>
+          <v-col cols="4" class="text-right"> <p class="caption mb-0"><v-icon small class="mb-1 mr-2">mdi-star</v-icon>{{rating}}</p></v-col>
         </v-row>
       </v-list-item-content>
     </v-list-item>
@@ -63,6 +63,9 @@ import VueDisqus from "../../components/commons/Disqus";
 
 export default {
 	components: {VueDisqus, SharedComponents},
+	validate({params}) {
+		return !!params.uid
+	},
 	head() {
 		return {
 			title: PrismicDom.RichText.asText(this.meta_title),
@@ -90,6 +93,13 @@ export default {
 			stars: 0
 		}
 	},
+	/**
+     * Наполнение страницы при генерации и локально
+     * @param params - параметры роутера
+     * @param $moment
+     * @param $axios
+     * @returns {Promise<{date: *, meta_description, data: *, meta_title, rating: number, header: *, logo, meta_keywords, content: *, rateData: any, tags}>}
+     */
 	async asyncData({params, $moment, $axios}) {
 		const {
 			data: {
@@ -111,6 +121,7 @@ export default {
 			date: $moment(first_publication_date).format('DD.MM.YYYY'),
 			logo: post_image,
 			tags,
+			rating: rateData.star,
 			rateData,
 			id,
 			meta_keywords,
@@ -125,7 +136,8 @@ export default {
 		}
 	},
 	async created() {
-		this.rateData = await this.$axios.$get(`/blog/post/prismic/${this.id}`);
+		this.rateData = await this.$axios.$get(`/blog/post/prismic/${this.id}`)
+		this.rating = this.rateData.star
 	},
 	watch: {
 		async stars(newVal, oldVal) {
@@ -138,6 +150,7 @@ export default {
 				star: (star/vote).toFixed(1)
 			});
 			this.rateData = post;
+			this.rating = post.star
 		}
 	},
 }
