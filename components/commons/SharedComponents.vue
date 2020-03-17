@@ -33,7 +33,6 @@ export default {
 	methods: {
 		copyLink() {
 			if (this.uid) this.$copyText(`${window.location.hostname}/story/${this.uid}`);
-			else console.log(this.$route);
 			this.snackbar = !this.snackbar
 		}
 	}
