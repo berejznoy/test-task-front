@@ -1,5 +1,0 @@
-User-agent: *
-Disallow: /category/
-Disallow: /top/
-Host: https://screep.ru
-Sitemap: https://screep.ru/sitemap.xml

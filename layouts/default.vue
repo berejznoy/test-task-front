@@ -1,7 +1,6 @@
 <template>
-  <v-app id="inspire" :style="{background: $vuetify.theme.themes[$customTheme].background}">
+  <v-app id="inspire">
     <v-navigation-drawer
-      :style="{background: $vuetify.theme.themes[$customTheme].menu}"
       v-model="drawer"
       app
       clipped
@@ -61,17 +60,17 @@
       clipped-left
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon v-if="this.$route.name === 'story-uid'" class="hidden-md-and-up" @click="$router.push('/')"> <v-icon>mdi-chevron-left</v-icon></v-btn>
-      <v-toolbar-title class="ml-2 pl-0" style="cursor: pointer" @click="$router.push('/')" >Страшные истории</v-toolbar-title>
+      <v-toolbar-title class="ml-2 pl-0" style="cursor: pointer" @click="$router.push('/')" >Личный кабинет</v-toolbar-title>
       <v-spacer></v-spacer>
-      <search />
       <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
         <v-icon> {{themeIcon}} </v-icon>
+      </v-btn>
+      <v-btn class="ml-5" @click="logout">
+        Выход
       </v-btn>
     </v-app-bar>
     <v-content>
       <v-container>
-        <search is-mobile/>
         <nuxt/>
       </v-container>
       <v-btn
@@ -91,17 +90,13 @@
 
     <v-footer app>
       <span style="font-size: 14px">&copy; 2020</span>
-      <v-spacer></v-spacer>
-      <span style="font-size: 14px">www.screep.ru</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-import Search from "../components/commons/Search"
 
 export default {
-	components: {Search},
 	props: {
 		source: String,
 	},
@@ -110,28 +105,17 @@ export default {
 		fab: null,
 		isSearchBlockClose: false,
 		menuItems: [
-			{ icon: 'mdi-ghost', text: 'Главная',  path: '/' },
-			{icon: 'mdi-star-circle',  text: 'Рейтинговые',  path: '/top'},
-			{ icon: 'mdi-chevron-up',
-				'icon-alt': 'mdi-chevron-down',
-				staticIcon: "mdi-sort",
-				text: 'Категории',
-				model: false,
-				children: [
-					{icon: 'mdi-mdi',  text: 'Призраки', path: '/category/ghosts'},
-					{icon: 'mdi-mdi',  text: 'Вампиры', path: '/category/vampires'},
-					{icon: 'mdi-mdi',  text: 'Монстры', path: '/category/monsters'},
-					{icon: 'mdi-mdi',  text: 'Демоны', path: '/category/demons'},
-					{icon: 'mdi-mdi',  text: 'Разное', path: '/category/other'},
-				],
-			},
-			{icon: 'mdi-plus',  text: 'Добавить историю'},
+			{ icon: "mdi-file-multiple", text: "Мои документы",  path: "/" }
 		],
 	}),
 	methods: {
-		check: (tag) => console.log(tag),
+		async logout() {
+			await this.$auth.logout();
+			localStorage.setItem("refreshToken", "");
+			await this.$router.push("/login")
+		},
 		onScroll (e) {
-			if (typeof window === 'undefined') return;
+			if (typeof window === "undefined") return;
 			const top = window.pageYOffset ||   e.target.scrollTop || 0;
 			this.fab = top > 20
 		},
@@ -141,7 +125,7 @@ export default {
 	},
 	computed: {
 		themeIcon() {
-			if (this.$vuetify.theme.dark === true) return 'mdi-white-balance-sunny';
+			if (this.$vuetify.theme.dark === true) return "mdi-white-balance-sunny";
 			else return "mdi-weather-night"
 		}
 	}

@@ -1,101 +1,80 @@
-import colors from 'vuetify/lib/util/colors'
-import {getAllPosts} from './utils/prismic'
-require('dotenv').config();
+import colors from "vuetify/lib/util/colors"
+require("dotenv").config();
 
-module.exports = {
-	generate: {
-		async routes() {
-			const items = await getAllPosts("document.type", "post");
-			const categories = await getAllPosts("document.type", "category")
-			const posts = await Promise.all(items.results.map(async item => {
-				return {
-					route: `/story/${item.uid}`
-				}
-			}));
-			const allCategories = categories.results.map(item => {
-				return {
-					route: `/category/${item.uid}`,
-					payload: {uid: item.uid, name:item.data.category_name }
-				}
-			});
-			return [...allCategories, ...posts]
-		}
-	},
+export default {
 	/*
   ** Headers of the page
   */
 	head: {
-		title: 'Страшные истории - блог для любителей мистики и жути',
+		title: "Test task front",
 		meta: [
-			{ charset: 'utf-8' },
-			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-			{ hid: 'description', name: 'description', content: 'Страшные, жуткие, таинственные и мистические истории. Реальные и не очень...' }
+			{ charset: "utf-8" },
+			{ name: "viewport", content: "width=device-width, initial-scale=1" },
+			{ hid: "description", name: "description", content: "Test task front" }
 		],
-		link: [
-			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-		]
 	},
 	env: {
-		baseUrl: process.env.API_URL || 'http://localhost:4000'
+		baseUrl: process.env.API_URL || "http://localhost:4000"
 	},
-	plugins: [
-		{ src: '~/plugins/clipboard' },
-		{ src: '~/plugins/mixins' },
-		{ src: '~/plugins/algolia' }
-	],
-	buildModules: ['@nuxtjs/vuetify', '@nuxtjs/moment', '@nuxtjs/dotenv', '@nuxtjs/axios'],
-	modules: ['nuxt-webfontloader', '@nuxtjs/sitemap'],
+	buildModules: ["@nuxtjs/vuetify", "@nuxtjs/dotenv", "@nuxtjs/axios",],
+	modules: ["nuxt-webfontloader",  "@nuxtjs/auth"],
 	axios: {
 		baseURL:  process.env.baseUrl
 	},
-	sitemap: {
-		hostname: 'https://screep.ru',
-		gzip: true
-	},
 	webfontloader: {
 		google: {
-			families: ['Montserrat:400,500,600,700,800&display=swap&subset=cyrillic']
+			families: ["Montserrat:400,500,600,700,800&display=swap&subset=cyrillic"]
 		}
 	},
+	plugins: [
+		{ src: "~/plugins/mixins" }
+	],
 	vuetify: {
 		/* module options */
-		customVariables: ['~/assets/variables.scss'],
+		customVariables: ["~/assets/variables.scss"],
 		theme: {
-			dark: true,
-			themes: {
-				light: {
-					background: colors.grey.lighten3,
-					menu: colors.grey.lighten4,
-					card: colors.grey.lighten4,
-					color: colors.grey.darken4
-				}
-			}
+			dark: false
 		},
 		defaultAssets: {
 			font: false
 		},
 		treeShake: true,
 	},
-
+	auth: {
+		strategies: {
+			local: {
+				endpoints: {
+					login: { url: "/signin", method: "post", propertyName: "accessToken" },
+					logout: { url: "/logout", method: "get" },
+					user: { url: "/info", method: "get", propertyName: "id" }
+				},
+				tokenRequired: true,
+				tokenType: "bearer"
+			}
+		}
+	},
+	router: {
+		middleware: ["auth"]
+	},
 	/*
   ** Customize the progress bar color
   */
 	loading: {
-		color: 'red'
+		color: "red"
 	},
 	/*
   ** Build configuration
   */
 	build: {
-		transpile: ['vue-instantsearch', 'instantsearch.js/ru'],
+		transpile: ["vue-instantsearch", "instantsearch.js/ru"],
 		/*
     ** Run ESLint on save
     */
 		extend (config, { isDev, isClient }) {
 			if (isDev && isClient) {
-				config.module.rules.push({enforce: 'pre',
+				config.module.rules.push({enforce: "pre",
 					test: /\.(js|vue)$/,
-					loader: 'eslint-loader',
+					loader: "eslint-loader",
 					exclude: /(node_modules)/
 				})
 			}

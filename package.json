@@ -1,7 +1,7 @@
 {
-  "name": "screep",
+  "name": "test-task",
   "version": "1.0.0",
-  "description": "Blog about creepy stories",
+  "description": "Test-task",
   "author": "Sergey Berezhnoy <ya_sergey@yahoo.com>",
   "private": true,
   "scripts": {
@@ -14,19 +14,16 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@nuxtjs/auth": "^4.9.0",
     "@nuxtjs/axios": "^5.9.5",
     "@nuxtjs/sitemap": "^2.0.1",
-    "algoliasearch": "^4.0.3",
+    "dotenv": "^8.2.0",
     "nuxt": "^2.0.0",
     "nuxt-webfontloader": "^1.1.0",
-    "prismic-dom": "^2.1.0",
-    "prismic-javascript": "^2.1.5",
-    "vue-clipboard2": "^0.3.1",
     "vue-instantsearch": "^2.7.0"
   },
   "devDependencies": {
     "@nuxtjs/dotenv": "^1.4.1",
-    "@nuxtjs/moment": "^1.6.0",
     "@nuxtjs/vuetify": "^1.11.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^4.19.1",
