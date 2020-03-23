@@ -1,6 +1,4 @@
-# screep
-
-> Blog about creepy stories
+# test-task
 
 ## Build Setup
 
